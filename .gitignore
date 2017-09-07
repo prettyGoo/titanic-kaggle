@@ -1,0 +1,14 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+__pycache__/\
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+.idea/
+test.csv
+titanic_predictions.csv
+train.csv
