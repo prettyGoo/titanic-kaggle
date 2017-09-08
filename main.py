@@ -7,7 +7,7 @@ import seaborn as sns
 from sklearn import preprocessing
 
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
+
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier, GradientBoostingClassifier, BaggingClassifier, VotingClassifier
 from sklearn.neighbors import KNeighborsClassifier, RadiusNeighborsClassifier
@@ -66,12 +66,19 @@ if __name__ == '__main__':
     bg3 = BaggingClassifier(rf)
     bg4 = BaggingClassifier(dt)
     bg5 = BaggingClassifier(gb)
-    clf = VotingClassifier(estimators=[('bg1', bg5), ('bg2', bg1), ('bg3', bg2)])
+    # clf = VotingClassifier(estimators=[('bg1', bg5), ('bg2', bg1), ('bg3', bg2)])
 
     # clf = VotingClassifier(estimators=[('br', BernoulliNB()), ('rf', RandomForestClassifier()), ('grd', AdaBoostClassifier())])
 
+    # classifier 1
+    clf = GradientBoostingClassifier()
+
     parameters = {
-        'voting': ['soft', 'hard']
+        'loss': ['deviance'],
+        'learning_rate': [0.05, 0.06, 0.07, 0.085, 0.1],
+        'n_estimators': [50, 70, 100],
+        'max_depth': [1, 2, 3, 5]
+        # 'voting': ['soft', 'hard']
         # 'alpha': [0.1, 0.2, 0.5, 0.65, 0.7, 0.75, 0.85, 1, 2, 3, 10],
         # 'n_estimators': [6, 7, 8, 9, 10, 11, 20, 100],
         # 'algorithm': ['SAMME', 'SAMME.R']
@@ -100,7 +107,46 @@ if __name__ == '__main__':
     except Exception as e:
         print(e)
 
-    clf = gs.best_estimator_
+    clf1 = gs.best_estimator_
+
+    # classifier 2
+    clf = BernoulliNB()
+
+    parameters = {
+        'alpha': [0.1, 0.2, 0.5, 0.65, 0.7, 1, 3, 10],
+        # 'n_estimators': [6, 7, 8, 9, 10, 11, 20, 100],
+        # 'algorithm': ['SAMME', 'SAMME.R']
+    }
+
+    accuracy_scorer = make_scorer(accuracy_score)
+    gs = GridSearchCV(clf, parameters, scoring=accuracy_scorer)
+    gs = gs.fit(X_train, y_train)
+    try:
+        print(gs.best_estimator_)
+    except Exception as e:
+        print(e)
+
+    clf2 = gs.best_estimator_
+
+    # classifier 3
+    clf = AdaBoostClassifier()
+
+    parameters = {
+        'base_estimator': [dt, rf],
+        'n_estimators': [20, 50, 70, 100],
+    }
+
+    accuracy_scorer = make_scorer(accuracy_score)
+    gs = GridSearchCV(clf, parameters, scoring=accuracy_scorer)
+    gs = gs.fit(X_train, y_train)
+    try:
+        print(gs.best_estimator_)
+    except Exception as e:
+        print(e)
+
+    clf3 = gs.best_estimator_
+
+    clf = VotingClassifier(estimators=[('clf1', clf1), ('clf2', clf2), ('clf3', clf3)])
     clf.fit(X_train, y_train)
 
     predictions = clf.predict(X_test)

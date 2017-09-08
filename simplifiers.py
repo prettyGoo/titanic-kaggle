@@ -3,7 +3,7 @@ import pandas as pd
 
 def simplify_ages(df):
     df.Age = df.Age.fillna(-0.5)
-    bins = (-1, 0, 5, 12, 18, 25, 35, 60, 110)
+    bins = (-1, 0, 4, 12, 18, 25, 35, 60, 110)
     group_names = ['Unknown', 'Baby', 'Child', 'Teenager', 'Student', 'Young Adult', 'Adult', 'Senior']
     categories = pd.cut(df.Age, bins, labels=group_names)
     df.Age = categories
